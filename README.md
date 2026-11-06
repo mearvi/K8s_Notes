@@ -74,7 +74,7 @@ The following 16 chapters form the master documentation framework. Chapters are 
 10. **[Chapter 10 — Storage Fundamentals and Dynamic Provisioning](Chapter_10_Storage_Fundamentals_and_Dynamic_Provisioning.md)** — PVs, PVCs, StorageClasses, dynamic provisioning, access modes, reclaim policies, Local Path Provisioner, and storage troubleshooting.
 11. **[Chapter 11 — Metrics Server and Autoscaling](Chapter_11_Metrics_Server_and_Autoscaling.md)** — Kubelet resource metrics, Metrics Server, the Metrics API, CPU/memory requests and limits, HPA configuration, scaling behavior, and troubleshooting.
 12. **[Chapter 12 — Prometheus Monitoring](Chapter_12_Prometheus_Monitoring.md)** — Prometheus architecture, Node Exporter, kube-state-metrics, scrape targets, PromQL, Grafana alerting, and troubleshooting.
-13. **Chapter 13 — Grafana Dashboards and Persistence** — Dashboards, data sources, persistent storage, and operational checks.
+13. **[Chapter 13 — Grafana Dashboards and Persistence](Chapter_13_Grafana_Dashboards_and_Persistence.md)** — Grafana dashboards, Prometheus data source, community imports, Slack alert routing, PVC-backed persistence, backup, and troubleshooting.
 14. **Chapter 14 — CI/CD Automation** — Source control workflows, build pipelines, image publishing, and deployment automation.
 15. **Chapter 15 — Argo CD GitOps Delivery** — GitOps principles, repository structure, application synchronization, and drift management.
 16. **Chapter 16 — Longhorn Storage** — Distributed block storage, replicas, volumes, backups, and Kubernetes integration.
