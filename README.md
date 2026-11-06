@@ -64,7 +64,7 @@ The following 16 chapters form the master documentation framework. Chapters are 
 
 1. **[Chapter 1 — Infrastructure Setup](Chapter_01_Infra_Setup.md)** — Windows host preparation, VirtualBox networking, Vagrant, three-node VM definitions, and guest OS prerequisites.
 2. **[Chapter 2 — Kubernetes Cluster Bootstrap](Chapter_02_Kubernetes_Cluster_Bootstrap.md)** — kubeadm initialization, control-plane configuration, Calico CNI installation, worker joining, and cluster validation.
-3. **Chapter 3 — Cluster Networking with Calico** — CNI installation, pod networking, node networking, and network validation.
+3. **[Chapter 3 — Cluster Networking with Calico](Chapter_03_Cluster_Networking_with_Calico.md)** — CNI installation, pod networking, node networking, and network validation.
 4. **Chapter 4 — Kubernetes Core Workloads** — Pods, ReplicaSets, Deployments, DaemonSets, Jobs, CronJobs, labels, selectors, and namespaces.
 5. **Chapter 5 — Services, DNS, and Cluster Networking** — ClusterIP, NodePort, service discovery, CoreDNS, and traffic flow.
 6. **Chapter 6 — Ingress and External Access** — Ingress controllers, host-based routing, and application access from the workstation.
