@@ -76,7 +76,7 @@ The following 16 chapters form the master documentation framework. Chapters are 
 12. **[Chapter 12 — Prometheus Monitoring](Chapter_12_Prometheus_Monitoring.md)** — Prometheus architecture, Node Exporter, kube-state-metrics, scrape targets, PromQL, Grafana alerting, and troubleshooting.
 13. **[Chapter 13 — Grafana Dashboards and Persistence](Chapter_13_Grafana_Dashboards_and_Persistence.md)** — Grafana dashboards, Prometheus data source, community imports, Slack alert routing, PVC-backed persistence, backup, and troubleshooting.
 14. **[Chapter 14 — CI/CD Automation](Chapter_14_CI_CD_Automation.md)** — GitHub Actions, Docker image build and Docker Hub publishing, self-hosted runner, commit-SHA versioning, and automated Kubernetes rollout.
-15. **Chapter 15 — Argo CD GitOps Delivery** — GitOps principles, repository structure, application synchronization, and drift management.
+15. **[Chapter 15 — Argo CD GitOps Delivery](Chapter_15_Argo_CD_GitOps_Delivery.md)** — Argo CD installation, Application manifests, Helm reconciliation, automated sync, self-heal, prune, and App of Apps.
 16. **Chapter 16 — Longhorn Storage** — Distributed block storage, replicas, volumes, backups, and Kubernetes integration.
 
 ---
