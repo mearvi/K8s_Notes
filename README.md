@@ -69,7 +69,7 @@ The following 16 chapters form the master documentation framework. Chapters are 
 5. **[Chapter 5 — Services, DNS, and Cluster Networking](Chapter_05_Services_DNS_and_Cluster_Networking.md)** — ClusterIP, NodePort, LoadBalancer, service discovery, CoreDNS, and traffic flow.
 6. **[Chapter 6 — Ingress, Host/Path Routing, and TLS](Chapter_06_Ingress_Host_Path_Routing_and_TLS.md)** — NGINX Ingress Controller, MetalLB integration, host-based and path-based routing, URI rewriting, and HTTPS with a Kubernetes TLS Secret.
 7. **[Chapter 7 — Kubernetes Configuration and Secrets](Chapter_07_Kubernetes_Configuration_and_Secrets.md)** — ConfigMaps, generic Secrets, environment and file injection, namespace scope, application configuration, Helm examples, and Secret security.
-8. **Chapter 8 — Helm Fundamentals** — Charts, releases, values, templates, linting, rendering, upgrades, and rollbacks.
+8. **[Chapter 8 — Helm Fundamentals](Chapter_08_Helm_Fundamentals.md)** — Helm installation and repositories, chart structure, values and templates, linting, rendering, release inspection, upgrades, rollbacks, and troubleshooting.
 9. **Chapter 9 — Multi-Tier Application with Helm** — Frontend, backend, PostgreSQL, service discovery, persistent data, and application connectivity.
 10. **Chapter 10 — Storage Fundamentals and Dynamic Provisioning** — PVs, PVCs, StorageClasses, access modes, and reclaim policies.
 11. **Chapter 11 — Metrics Server and Autoscaling** — Resource requests/limits, metrics, and Horizontal Pod Autoscaler.
