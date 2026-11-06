@@ -71,7 +71,7 @@ The following 16 chapters form the master documentation framework. Chapters are 
 7. **[Chapter 7 — Kubernetes Configuration and Secrets](Chapter_07_Kubernetes_Configuration_and_Secrets.md)** — ConfigMaps, generic Secrets, environment and file injection, namespace scope, application configuration, Helm examples, and Secret security.
 8. **[Chapter 8 — Helm Fundamentals](Chapter_08_Helm_Fundamentals.md)** — Helm installation and repositories, chart structure, values and templates, linting, rendering, release inspection, upgrades, rollbacks, and troubleshooting.
 9. **[Chapter 9 — Multi-Tier Application with Helm](Chapter_09_Multi_Tier_Application_with_Helm.md)** — A Helm-managed frontend, Flask backend, PostgreSQL StatefulSet, Services, Secret, Ingress, persistent storage, deployment validation, and troubleshooting.
-10. **Chapter 10 — Storage Fundamentals and Dynamic Provisioning** — PVs, PVCs, StorageClasses, access modes, and reclaim policies.
+10. **[Chapter 10 — Storage Fundamentals and Dynamic Provisioning](Chapter_10_Storage_Fundamentals_and_Dynamic_Provisioning.md)** — PVs, PVCs, StorageClasses, dynamic provisioning, access modes, reclaim policies, Local Path Provisioner, and storage troubleshooting.
 11. **Chapter 11 — Metrics Server and Autoscaling** — Resource requests/limits, metrics, and Horizontal Pod Autoscaler.
 12. **Chapter 12 — Prometheus Monitoring** — Metrics collection, scrape configuration, targets, and alerting foundations.
 13. **Chapter 13 — Grafana Dashboards and Persistence** — Dashboards, data sources, persistent storage, and operational checks.
