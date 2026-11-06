@@ -66,7 +66,7 @@ The following 16 chapters form the master documentation framework. Chapters are 
 2. **[Chapter 2 — Kubernetes Cluster Bootstrap](Chapter_02_Kubernetes_Cluster_Bootstrap.md)** — kubeadm initialization, control-plane configuration, Calico CNI installation, worker joining, and cluster validation.
 3. **[Chapter 3 — Cluster Networking with Calico](Chapter_03_Cluster_Networking_with_Calico.md)** — CNI installation, pod networking, node networking, and network validation.
 4. **[Chapter 4 — Kubernetes Core Workloads](Chapter_04_Kubernetes_Core_Workloads.md)** — Pods, ReplicaSets, Deployments, DaemonSets, Jobs, CronJobs, labels, selectors, and namespaces.
-5. **Chapter 5 — Services, DNS, and Cluster Networking** — ClusterIP, NodePort, service discovery, CoreDNS, and traffic flow.
+5. **[Chapter 5 — Services, DNS, and Cluster Networking](Chapter_05_Services_DNS_and_Cluster_Networking.md)** — ClusterIP, NodePort, LoadBalancer, service discovery, CoreDNS, and traffic flow.
 6. **Chapter 6 — Ingress and External Access** — Ingress controllers, host-based routing, and application access from the workstation.
 7. **Chapter 7 — Kubernetes Configuration and Secrets** — ConfigMaps, Secrets, environment injection, and configuration management practices.
 8. **Chapter 8 — Helm Fundamentals** — Charts, releases, values, templates, linting, rendering, upgrades, and rollbacks.
