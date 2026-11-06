@@ -63,7 +63,7 @@ The host-only network is used for stable private addressing. In the guest, Virtu
 The following 16 chapters form the master documentation framework. Chapters are published sequentially as their implementation and verification are documented.
 
 1. **[Chapter 1 — Infrastructure Setup](Chapter_01_Infra_Setup.md)** — Windows host preparation, VirtualBox networking, Vagrant, three-node VM definitions, and guest OS prerequisites.
-2. **Chapter 2 — Kubernetes Cluster Bootstrap** — kubeadm initialization, control-plane configuration, worker joining, and cluster access.
+2. **[Chapter 2 — Kubernetes Cluster Bootstrap](Chapter_02_Kubernetes_Cluster_Bootstrap.md)** — kubeadm initialization, control-plane configuration, Calico CNI installation, worker joining, and cluster validation.
 3. **Chapter 3 — Cluster Networking with Calico** — CNI installation, pod networking, node networking, and network validation.
 4. **Chapter 4 — Kubernetes Core Workloads** — Pods, ReplicaSets, Deployments, DaemonSets, Jobs, CronJobs, labels, selectors, and namespaces.
 5. **Chapter 5 — Services, DNS, and Cluster Networking** — ClusterIP, NodePort, service discovery, CoreDNS, and traffic flow.
@@ -87,7 +87,7 @@ The following 16 chapters form the master documentation framework. Chapters are 
 K8s_Notes/
 ├── README.md
 ├── Chapter_01_Infra_Setup.md
-├── Chapter_02_Kubernetes_Cluster_Bootstrap.md       # planned
+├── Chapter_02_Kubernetes_Cluster_Bootstrap.md
 ├── ...
 └── Chapter_16_Longhorn_Storage.md                   # planned
 ```
