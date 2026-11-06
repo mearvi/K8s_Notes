@@ -936,10 +936,6 @@ Use this checklist when repeating the exercises on the current cluster.
 
 ## 12. References
 
-### Lab source
-
-- Original lab conversation export: `K8s Cluster in Vagrant.pdf`, especially the Ingress installation and host-routing exercises (pages 200–217), path-based routing and TLS exercises (pages 218–226), and the networking summary (pages 247–248).
-
 ### Upstream documentation
 
 - Kubernetes Ingress: https://kubernetes.io/docs/concepts/services-networking/ingress/
