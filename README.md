@@ -67,7 +67,7 @@ The following 16 chapters form the master documentation framework. Chapters are 
 3. **[Chapter 3 — Cluster Networking with Calico](Chapter_03_Cluster_Networking_with_Calico.md)** — CNI installation, pod networking, node networking, and network validation.
 4. **[Chapter 4 — Kubernetes Core Workloads](Chapter_04_Kubernetes_Core_Workloads.md)** — Pods, ReplicaSets, Deployments, DaemonSets, Jobs, CronJobs, labels, selectors, and namespaces.
 5. **[Chapter 5 — Services, DNS, and Cluster Networking](Chapter_05_Services_DNS_and_Cluster_Networking.md)** — ClusterIP, NodePort, LoadBalancer, service discovery, CoreDNS, and traffic flow.
-6. **Chapter 6 — Ingress and External Access** — Ingress controllers, host-based routing, and application access from the workstation.
+6. **[Chapter 6 — Ingress, Host/Path Routing, and TLS](Chapter_06_Ingress_Host_Path_Routing_and_TLS.md)** — NGINX Ingress Controller, MetalLB integration, host-based and path-based routing, URI rewriting, and HTTPS with a Kubernetes TLS Secret.
 7. **Chapter 7 — Kubernetes Configuration and Secrets** — ConfigMaps, Secrets, environment injection, and configuration management practices.
 8. **Chapter 8 — Helm Fundamentals** — Charts, releases, values, templates, linting, rendering, upgrades, and rollbacks.
 9. **Chapter 9 — Multi-Tier Application with Helm** — Frontend, backend, PostgreSQL, service discovery, persistent data, and application connectivity.
