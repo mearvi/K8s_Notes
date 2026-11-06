@@ -2,13 +2,13 @@
 
 ## 1. Chapter objectives
 
-This chapter documents the CI/CD pipeline built in the dedicated application repository \`mearvi/k8s-github-actions-lab\`. It connects source control, GitHub Actions, Docker image publishing, and automated Kubernetes deployment.
+This chapter documents the CI/CD pipeline built in the dedicated application repository `mearvi/k8s-github-actions-lab`. It connects source control, GitHub Actions, Docker image publishing, and automated Kubernetes deployment.
 
 The final workflow is stored at:
 
-\`\`\`text
+```text
 .github/workflows/cicd.yml
-\`\`\`
+```
 
 The chapter explains the earlier separate workflows, why they were consolidated, how the self-hosted runner solved private-network access, how commit-SHA image tags provide traceability, and how to verify the resulting Deployment rollout.
 
@@ -27,38 +27,38 @@ By the end, you should be able to:
 
 | Component | Lab value |
 |---|---|
-| Application repository | \`mearvi/k8s-github-actions-lab\` |
-| Workflow file | \`.github/workflows/cicd.yml\` |
-| Source branch | \`main\` |
+| Application repository | `mearvi/k8s-github-actions-lab` |
+| Workflow file | `.github/workflows/cicd.yml` |
+| Source branch | `main` |
 | Container registry | Docker Hub |
-| Image repository | \`mearvi/flask-lab\` |
-| Kubernetes namespace | \`dev\` |
-| Kubernetes Deployment | \`flask-app\` |
-| Deployment container name | \`flask-app\` |
-| Control-plane node | \`k8master1\` |
-| Kubernetes API private address | \`192.168.56.10:6443\` |
-| Ingress hostname | \`flask.lab.local\` |
-| Ingress address captured in the lab | \`192.168.56.241\` |
+| Image repository | `mearvi/flask-lab` |
+| Kubernetes namespace | `dev` |
+| Kubernetes Deployment | `flask-app` |
+| Deployment container name | `flask-app` |
+| Control-plane node | `k8master1` |
+| Kubernetes API private address | `192.168.56.10:6443` |
+| Ingress hostname | `flask.lab.local` |
+| Ingress address captured in the lab | `192.168.56.241` |
 
 The Kubernetes cluster has three nodes:
 
 | Node | Role | Host-only address |
 |---|---|---|
-| \`k8master1\` | Control plane | \`192.168.56.10\` |
-| \`k8worker1\` | Worker | \`192.168.56.20\` |
-| \`k8worker2\` | Worker | \`192.168.56.21\` |
+| `k8master1` | Control plane | `192.168.56.10` |
+| `k8worker1` | Worker | `192.168.56.20` |
+| `k8worker2` | Worker | `192.168.56.21` |
 
-The Flask application is exposed through a Kubernetes Service and NGINX Ingress. The recorded browser test used \`http://flask.lab.local\` and returned:
+The Flask application is exposed through a Kubernetes Service and NGINX Ingress. The recorded browser test used `http://flask.lab.local` and returned:
 
-\`\`\`text
+```text
 Hello from GitHub Actions Lab
-\`\`\`
+```
 
 The Windows hosts file contained this lab mapping:
 
-\`\`\`text
+```text
 192.168.56.241 flask.lab.local
-\`\`\`
+```
 
 This is a private learning environment. Confirm the current Ingress address with Kubernetes instead of assuming the historical address is permanent.
 
@@ -81,13 +81,13 @@ In this lab, the verified CI stages include checkout and Docker image build. The
 
 Continuous Delivery keeps changes deployable and may require a manual approval before release. Continuous Deployment automatically deploys a change after its required pipeline stages succeed.
 
-This lab automatically deploys the newly published image to the \`dev\` namespace. It is an automated deployment pipeline for the homelab.
+This lab automatically deploys the newly published image to the `dev` namespace. It is an automated deployment pipeline for the homelab.
 
 ### 3.3 Mapping CI/CD to the lab
 
 | Activity | Stage | Purpose |
 |---|---|---|
-| Push to \`main\` | Trigger | Starts the workflow |
+| Push to `main` | Trigger | Starts the workflow |
 | Checkout | CI | Retrieves the source commit |
 | Docker Hub login | Build prerequisite | Authenticates the publisher |
 | Docker build | CI | Creates the image |
@@ -101,13 +101,13 @@ A successful Docker push does not prove that Kubernetes deployed the image. Regi
 
 The final workflow contains two jobs:
 
-- \`build-push\` runs on a GitHub-hosted Ubuntu runner.
-- \`deploy\` runs on a self-hosted runner.
-- \`needs: build-push\` makes the deployment job wait for successful image publishing.
+- `build-push` runs on a GitHub-hosted Ubuntu runner.
+- `deploy` runs on a self-hosted runner.
+- `needs: build-push` makes the deployment job wait for successful image publishing.
 
 ### 4.1 Mermaid architecture diagram
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     A[Developer changes Flask source] --> B[Commit and push to main]
     B --> C[GitHub push event]
@@ -131,7 +131,7 @@ flowchart TD
     T --> U[New Pods become available]
     U --> V[Ingress: flask.lab.local]
     V --> W[Flask application response]
-\`\`\`
+```
 
 ### 4.2 Why two runner types?
 
@@ -139,18 +139,18 @@ The build job does not need direct access to the private Kubernetes network. A G
 
 The deployment job must contact the Kubernetes API server at the private lab address:
 
-\`\`\`text
+```text
 https://192.168.56.10:6443
-\`\`\`
+```
 
 The GitHub-hosted runner could not route to this private Vagrant address. The recorded connection attempt failed with an I/O timeout.
 
-The lab solution was to install a GitHub Actions self-hosted runner on \`k8master1\`. It has access to the local cluster network and the node's Kubernetes client configuration.
+The lab solution was to install a GitHub Actions self-hosted runner on `k8master1`. It has access to the local cluster network and the node's Kubernetes client configuration.
 
 | Job | Runner | Reason |
 |---|---|---|
-| \`build-push\` | \`ubuntu-latest\` | Build and publish without cluster-network access |
-| \`deploy\` | \`self-hosted\` | Must reach the private Kubernetes API |
+| `build-push` | `ubuntu-latest` | Build and publish without cluster-network access |
+| `deploy` | `self-hosted` | Must reach the private Kubernetes API |
 
 A self-hosted runner on a control-plane node is a convenient homelab arrangement, not a general production recommendation. Production environments should use a dedicated, hardened runner or deployment agent with narrowly scoped Kubernetes permissions.
 
@@ -158,44 +158,44 @@ A self-hosted runner on a control-plane node is a convenient homelab arrangement
 
 Workflow files are YAML documents stored under:
 
-\`\`\`text
+```text
 .github/workflows/
-\`\`\`
+```
 
-The lab's final workflow is \`.github/workflows/cicd.yml\`.
+The lab's final workflow is `.github/workflows/cicd.yml`.
 
 | Keyword | Meaning |
 |---|---|
-| \`name\` | Human-readable workflow name |
-| \`on\` | Trigger event |
-| \`push\` | Run when commits are pushed |
-| \`branches\` | Restrict the trigger to selected branches |
-| \`jobs\` | Defines jobs |
-| \`runs-on\` | Selects runner type or label |
-| \`needs\` | Establishes a job dependency |
-| \`steps\` | Ordered operations in a job |
-| \`uses\` | Invokes a reusable action |
-| \`run\` | Executes shell commands |
-| \`with\` | Supplies action inputs |
-| \`secrets.*\` | Reads a configured Actions secret |
-| \`github.sha\` | Full SHA of the commit that triggered the workflow |
+| `name` | Human-readable workflow name |
+| `on` | Trigger event |
+| `push` | Run when commits are pushed |
+| `branches` | Restrict the trigger to selected branches |
+| `jobs` | Defines jobs |
+| `runs-on` | Selects runner type or label |
+| `needs` | Establishes a job dependency |
+| `steps` | Ordered operations in a job |
+| `uses` | Invokes a reusable action |
+| `run` | Executes shell commands |
+| `with` | Supplies action inputs |
+| `secrets.*` | Reads a configured Actions secret |
+| `github.sha` | Full SHA of the commit that triggered the workflow |
 
 ### 5.1 Trigger
 
-The workflow runs on pushes to \`main\`:
+The workflow runs on pushes to `main`:
 
-\`\`\`yaml
+```yaml
 on:
   push:
     branches:
       - main
-\`\`\`
+```
 
 ### 5.2 Jobs and execution order
 
 Jobs may run in parallel unless a dependency is declared. The final workflow contains:
 
-\`\`\`yaml
+```yaml
 jobs:
   build-push:
     # build and publish the image
@@ -203,26 +203,26 @@ jobs:
   deploy:
     needs: build-push
     # update Kubernetes
-\`\`\`
+```
 
-Without \`needs\`, separate jobs triggered by the same push could start at the same time. Deployment could request an image before the build job had published it.
+Without `needs`, separate jobs triggered by the same push could start at the same time. Deployment could request an image before the build job had published it.
 
 ### 5.3 Actions and shell commands
 
 The workflow uses reusable actions for checkout and Docker Hub authentication:
 
-\`\`\`yaml
+```yaml
 - name: Checkout
   uses: actions/checkout@v4
-\`\`\`
+```
 
-\`\`\`yaml
+```yaml
 - name: Login to Docker Hub
   uses: docker/login-action@v3
   with:
     username: ${{ secrets.DOCKER_USERNAME }}
     password: ${{ secrets.DOCKER_PASSWORD }}
-\`\`\`
+```
 
 Docker build, push, and Kubernetes deployment are executed with shell commands.
 
@@ -232,31 +232,31 @@ The practice started with separate workflow files. They helped isolate and learn
 
 | Earlier file | Initial purpose |
 |---|---|
-| \`docker-build.yml\` | Build local image \`flask-lab:v1\`; no registry push |
-| \`docker-push.yml\` | Build and push \`flask-lab:latest\` to Docker Hub |
-| \`deploy.yml\` | Run Kubernetes commands; initially restarted the Deployment |
+| `docker-build.yml` | Build local image `flask-lab:v1`; no registry push |
+| `docker-push.yml` | Build and push `flask-lab:latest` to Docker Hub |
+| `deploy.yml` | Run Kubernetes commands; initially restarted the Deployment |
 
 ### 6.1 Build-only workflow
 
 The initial build-only example used:
 
-\`\`\`bash
+```bash
 docker build -t flask-lab:v1 .
 docker images
-\`\`\`
+```
 
-The practice record shows a successful build and an image listing for \`flask-lab:v1\`. The displayed image size was approximately 132 MB.
+The practice record shows a successful build and an image listing for `flask-lab:v1`. The displayed image size was approximately 132 MB.
 
 This established the first CI stage: Git push → GitHub Actions runner → Docker build.
 
 ### 6.2 Build-and-push workflow
 
-The next stage authenticated to Docker Hub and published an image. The early version used the mutable \`latest\` tag:
+The next stage authenticated to Docker Hub and published an image. The early version used the mutable `latest` tag:
 
-\`\`\`bash
+```bash
 docker build -t <DOCKERHUB_USER>/flask-lab:latest .
 docker push <DOCKERHUB_USER>/flask-lab:latest
-\`\`\`
+```
 
 The first registry login attempt failed because the configured credential was incorrect. The recorded resolution was to generate a replacement Docker Hub access token, update the GitHub secret, and rerun the workflow. A later run recorded successful login, image build, and push.
 
@@ -264,17 +264,17 @@ The first registry login attempt failed because the configured credential was in
 
 The first deployment workflow ran:
 
-\`\`\`bash
+```bash
 kubectl get nodes
 kubectl rollout restart deployment/flask-app -n dev
 kubectl rollout status deployment/flask-app -n dev
-\`\`\`
+```
 
-This restarted Pods but did not change the image reference in the Deployment. If the Deployment still referenced \`latest\`, a restart did not provide a reliable record of which source revision was deployed.
+This restarted Pods but did not change the image reference in the Deployment. If the Deployment still referenced `latest`, a restart did not provide a reliable record of which source revision was deployed.
 
 ### 6.4 Race condition between separate workflows
 
-When \`docker-push.yml\` and \`deploy.yml\` both had a push-to-\`main\` trigger, GitHub could start them independently:
+When `docker-push.yml` and `deploy.yml` both had a push-to-`main` trigger, GitHub could start them independently:
 
 1. Deployment starts.
 2. It requests the image tagged with the new commit.
@@ -283,18 +283,18 @@ When \`docker-push.yml\` and \`deploy.yml\` both had a push-to-\`main\` trigger,
 
 The final design places build/push and deployment in one workflow and declares:
 
-\`\`\`yaml
+```yaml
 deploy:
   needs: build-push
-\`\`\`
+```
 
-This ensures the deployment job waits for successful image publishing. The live application repository contains the consolidated \`.github/workflows/cicd.yml\` workflow.
+This ensures the deployment job waits for successful image publishing. The live application repository contains the consolidated `.github/workflows/cicd.yml` workflow.
 
 ## 7. Docker image versioning with the Git commit SHA
 
-### 7.1 Why not use only \`latest\`?
+### 7.1 Why not use only `latest`?
 
-A mutable tag such as \`latest\` can point to different image contents over time. If the Deployment uses only \`latest\`, it becomes harder to determine:
+A mutable tag such as `latest` can point to different image contents over time. If the Deployment uses only `latest`, it becomes harder to determine:
 
 - Which source commit produced the running image?
 - Which image should be redeployed to reproduce a release?
@@ -303,61 +303,61 @@ A mutable tag such as \`latest\` can point to different image contents over time
 
 A commit-specific tag creates a traceable relationship between source code and the container image.
 
-### 7.2 The \`github.sha\` context
+### 7.2 The `github.sha` context
 
 GitHub Actions provides the full SHA of the commit that triggered the workflow:
 
-\`\`\`text
+```text
 ${{ github.sha }}
-\`\`\`
+```
 
 The final workflow uses that value in the image name:
 
-\`\`\`text
+```text
 <DOCKERHUB_USER>/flask-lab:<FULL_GIT_COMMIT_SHA>
-\`\`\`
+```
 
 A recorded image from the lab was:
 
-\`\`\`text
+```text
 mearvi/flask-lab:25d1c956759c4b13b056dc818103266a9fbabd4a
-\`\`\`
+```
 
 A later successful GitHub Actions run used commit:
 
-\`\`\`text
+```text
 b55df06c700ded1a6f74ac6c656aa38e62a779ee
-\`\`\`
+```
 
 These are historical lab identifiers, not credentials.
 
 ### 7.3 Build and push commands
 
-\`\`\`bash
+```bash
 docker build \
   -t <DOCKERHUB_USER>/flask-lab:<FULL_GIT_COMMIT_SHA> .
 
 docker push \
   <DOCKERHUB_USER>/flask-lab:<FULL_GIT_COMMIT_SHA>
-\`\`\`
+```
 
 The same image name and tag must be used by the deployment job. If build publishes one tag while deployment requests another, Kubernetes will not deploy the artifact just built.
 
 ### 7.4 Verify the deployed image
 
-\`\`\`bash
+```bash
 kubectl get deployment flask-app -n dev \
   -o jsonpath='{.spec.template.spec.containers[0].image}'
 echo
-\`\`\`
+```
 
 Expected shape:
 
-\`\`\`text
+```text
 <DOCKERHUB_USER>/flask-lab:<FULL_GIT_COMMIT_SHA>
-\`\`\`
+```
 
-The output should identify the intended commit-specific image, not only \`latest\`.
+The output should identify the intended commit-specific image, not only `latest`.
 
 ## 8. GitHub Secrets and credential handling
 
@@ -365,16 +365,16 @@ The output should identify the intended commit-specific image, not only \`latest
 
 | Secret name | Purpose | Value to configure |
 |---|---|---|
-| \`DOCKER_USERNAME\` | Docker Hub account name | Your registry username |
-| \`DOCKER_PASSWORD\` | Docker Hub authentication | Docker Hub access token |
+| `DOCKER_USERNAME` | Docker Hub account name | Your registry username |
+| `DOCKER_PASSWORD` | Docker Hub authentication | Docker Hub access token |
 
 The workflow references the values without embedding them:
 
-\`\`\`yaml
+```yaml
 with:
   username: ${{ secrets.DOCKER_USERNAME }}
   password: ${{ secrets.DOCKER_PASSWORD }}
-\`\`\`
+```
 
 ### 8.2 Configure repository secrets
 
@@ -384,8 +384,8 @@ In the application repository on GitHub:
 2. Open **Secrets and variables**.
 3. Select **Actions**.
 4. Select **New repository secret**.
-5. Create \`DOCKER_USERNAME\`.
-6. Create \`DOCKER_PASSWORD\` and store the Docker Hub access token as its value.
+5. Create `DOCKER_USERNAME`.
+6. Create `DOCKER_PASSWORD` and store the Docker Hub access token as its value.
 
 Never paste a token into a workflow file, a shell command committed to Git, an issue, a pull request, or public documentation.
 
@@ -396,7 +396,7 @@ An access token can be rotated or revoked without changing the account password.
 ### 8.4 Secret safety checklist
 
 - Never commit tokens, passwords, private keys, or kubeconfig files.
-- Never print secret values with \`echo\`, \`env\`, \`printenv\`, or debug output.
+- Never print secret values with `echo`, `env`, `printenv`, or debug output.
 - Do not place credentials directly in Docker build arguments.
 - Rotate credentials that may have been exposed.
 - Review workflow logs before sharing them.
@@ -405,11 +405,11 @@ An access token can be rotated or revoked without changing the account password.
 
 ### 8.5 Kubeconfig: earlier proposal versus final design
 
-An earlier approach discussed creating a kubeconfig file on the control-plane node, Base64-encoding it, and storing it in a GitHub secret named \`KUBECONFIG_DATA\`.
+An earlier approach discussed creating a kubeconfig file on the control-plane node, Base64-encoding it, and storing it in a GitHub secret named `KUBECONFIG_DATA`.
 
 That secret was not required by the final self-hosted runner workflow.
 
-The final deployment job runs on the self-hosted runner on \`k8master1\`, where the cluster network and local \`kubectl\` configuration are available. The live \`cicd.yml\` does not decode a kubeconfig or read \`KUBECONFIG_DATA\`.
+The final deployment job runs on the self-hosted runner on `k8master1`, where the cluster network and local `kubectl` configuration are available. The live `cicd.yml` does not decode a kubeconfig or read `KUBECONFIG_DATA`.
 
 Do not add a kubeconfig secret merely because an earlier draft described it. The runner architecture determines how cluster access is supplied.
 
@@ -419,9 +419,9 @@ For production, avoid using a broad administrator kubeconfig on a CI runner. Pre
 
 ### 9.1 Why the runner was needed
 
-The Kubernetes API endpoint is on the private Vagrant network. The GitHub-hosted runner could not route to \`192.168.56.10:6443\`; the recorded failure was an I/O timeout.
+The Kubernetes API endpoint is on the private Vagrant network. The GitHub-hosted runner could not route to `192.168.56.10:6443`; the recorded failure was an I/O timeout.
 
-The lab solution was to install a GitHub Actions runner on \`k8master1\`.
+The lab solution was to install a GitHub Actions runner on `k8master1`.
 
 ### 9.2 Registration
 
@@ -431,17 +431,17 @@ The registration token is short-lived. Do not copy it into documentation or comm
 
 From the runner directory, the configuration command is:
 
-\`\`\`bash
+```bash
 ./config.sh
-\`\`\`
+```
 
 Follow the generated instructions and register the runner to the intended repository. Do not reuse an old registration token.
 
 ### 9.3 Run interactively for a first test
 
-\`\`\`bash
+```bash
 ./run.sh
-\`\`\`
+```
 
 The terminal should show that the runner is listening for jobs. This is useful for a first test because job arrival and execution are visible.
 
@@ -453,11 +453,11 @@ The lab notes record converting the runner to a service so that it remains avail
 
 From the runner installation directory:
 
-\`\`\`bash
+```bash
 sudo ./svc.sh install
 sudo ./svc.sh start
 sudo ./svc.sh status
-\`\`\`
+```
 
 The recorded verification indicated that the service was active and listening for jobs. Service names and output vary by runner version and Linux distribution; inspect the installed service rather than assuming a fixed unit name.
 
@@ -476,15 +476,15 @@ For a production-like setup:
 - Rotate credentials after suspected exposure.
 - Consider ephemeral runners for stronger isolation.
 
-The demonstrated lab runner was installed on \`k8master1\`.
+The demonstrated lab runner was installed on `k8master1`.
 
-## 10. Final workflow: \`cicd.yml\`
+## 10. Final workflow: `cicd.yml`
 
 The following is the final workflow structure present in the application repository. Credential values are represented only by GitHub secret references.
 
-**File:** \`.github/workflows/cicd.yml\`
+**File:** `.github/workflows/cicd.yml`
 
-\`\`\`yaml
+```yaml
 name: CI-CD Pipeline
 
 on:
@@ -550,141 +550,141 @@ jobs:
       - name: Verify Rollout
         run: |
           kubectl rollout status deployment/flask-app -n dev
-\`\`\`
+```
 
 ### 10.1 Understand the build-push job
 
-\`\`\`yaml
+```yaml
 build-push:
   runs-on: ubuntu-latest
-\`\`\`
+```
 
 GitHub provisions a hosted Ubuntu runner for this job.
 
 The checkout action retrieves the source associated with the triggering commit:
 
-\`\`\`yaml
+```yaml
 - name: Checkout
   uses: actions/checkout@v4
-\`\`\`
+```
 
 The Docker login action authenticates using the two repository secrets:
 
-\`\`\`yaml
+```yaml
 - name: Login to Docker Hub
   uses: docker/login-action@v3
   with:
     username: ${{ secrets.DOCKER_USERNAME }}
     password: ${{ secrets.DOCKER_PASSWORD }}
-\`\`\`
+```
 
 The build step creates the image and tags it with the full commit SHA:
 
-\`\`\`yaml
+```yaml
 - name: Build Docker Image
   run: |
     docker build \
       -t ${{ secrets.DOCKER_USERNAME }}/flask-lab:${{ github.sha }} .
-\`\`\`
+```
 
 The push step uploads that exact tag:
 
-\`\`\`yaml
+```yaml
 - name: Push Docker Image
   run: |
     docker push \
       ${{ secrets.DOCKER_USERNAME }}/flask-lab:${{ github.sha }}
-\`\`\`
+```
 
 ### 10.2 Understand the deploy job
 
-\`\`\`yaml
+```yaml
 deploy:
   needs: build-push
   runs-on: self-hosted
-\`\`\`
+```
 
 The deploy job waits for the image publishing job to succeed and then runs on the self-hosted runner.
 
 First, it checks cluster access:
 
-\`\`\`bash
+```bash
 kubectl get nodes
-\`\`\`
+```
 
 Then it changes the image in the Deployment:
 
-\`\`\`bash
+```bash
 kubectl set image deployment/flask-app \
   flask-app=<DOCKERHUB_USER>/flask-lab:<FULL_GIT_COMMIT_SHA> \
   -n dev
-\`\`\`
+```
 
-The first \`flask-app\` identifies the Deployment. The second \`flask-app\` is the container name inside the Pod template. They happen to match in this lab, but are separate Kubernetes fields.
+The first `flask-app` identifies the Deployment. The second `flask-app` is the container name inside the Pod template. They happen to match in this lab, but are separate Kubernetes fields.
 
 The container name was checked during the practice:
 
-\`\`\`bash
+```bash
 kubectl get deployment flask-app -n dev \
   -o jsonpath='{.spec.template.spec.containers[0].name}'
 echo
-\`\`\`
+```
 
 The observed container name was:
 
-\`\`\`text
+```text
 flask-app
-\`\`\`
+```
 
 The workflow annotates the Deployment with the commit being deployed:
 
-\`\`\`bash
+```bash
 kubectl annotate deployment/flask-app \
   kubernetes.io/change-cause="Deploy commit <FULL_GIT_COMMIT_SHA>" \
   -n dev --overwrite
-\`\`\`
+```
 
 Finally, it waits for the rollout:
 
-\`\`\`bash
+```bash
 kubectl rollout status deployment/flask-app -n dev
-\`\`\`
+```
 
-A successful \`kubectl set image\` means the Pod template was updated. The rollout-status step separately checks whether the new Pods become available.
+A successful `kubectl set image` means the Pod template was updated. The rollout-status step separately checks whether the new Pods become available.
 
 ### 10.3 Note about the declared job output
 
-The live workflow declares an \`image_tag\` job output equal to the triggering commit SHA. The deploy job currently uses the commit context directly instead of reading \`needs.build-push.outputs.image_tag\`. Both identify the same triggering commit in this workflow.
+The live workflow declares an `image_tag` job output equal to the triggering commit SHA. The deploy job currently uses the commit context directly instead of reading `needs.build-push.outputs.image_tag`. Both identify the same triggering commit in this workflow.
 
 The output declaration is therefore not required by the current implementation. It is retained here because it exists in the live workflow. A later cleanup could remove the unused output or explicitly consume it from the dependent job. Test any workflow change before replacing the verified version.
 
 ## 11. End-to-end execution sequence
 
-1. **Change the application.** A later practice example changed the Flask homepage response from \`Hello from GitHub Actions Lab\` to a versioned message such as \`Hello from GitHub Actions Lab - Version 2\`.
+1. **Change the application.** A later practice example changed the Flask homepage response from `Hello from GitHub Actions Lab` to a versioned message such as `Hello from GitHub Actions Lab - Version 2`.
 2. **Commit and push.** From the application repository:
 
-   \`\`\`bash
+   ```bash
    git status
    git add .
    git commit -m "Update homepage"
    git push origin main
-   \`\`\`
+   ```
 
 3. **Checkout.** The build job retrieves the triggering source commit.
-4. **Authenticate.** The Docker login action uses \`DOCKER_USERNAME\` and \`DOCKER_PASSWORD\` from GitHub Secrets.
+4. **Authenticate.** The Docker login action uses `DOCKER_USERNAME` and `DOCKER_PASSWORD` from GitHub Secrets.
 5. **Build.** Docker creates the image tagged with the full Git commit SHA.
 6. **Publish.** Docker pushes the same image name and tag to Docker Hub.
-7. **Wait.** \`needs: build-push\` prevents deployment from starting before image publishing succeeds.
-8. **Verify cluster.** The self-hosted runner runs \`kubectl get nodes\`.
-9. **Update image.** The runner changes the \`flask-app\` container image in Deployment \`flask-app\`, namespace \`dev\`.
-10. **Verify rollout.** The workflow waits for \`kubectl rollout status deployment/flask-app -n dev\`.
+7. **Wait.** `needs: build-push` prevents deployment from starting before image publishing succeeds.
+8. **Verify cluster.** The self-hosted runner runs `kubectl get nodes`.
+9. **Update image.** The runner changes the `flask-app` container image in Deployment `flask-app`, namespace `dev`.
+10. **Verify rollout.** The workflow waits for `kubectl rollout status deployment/flask-app -n dev`.
 11. **Verify application.** From a host that can resolve the lab hostname and reach Ingress:
 
-   \`\`\`bash
+   ```bash
    curl -i http://flask.lab.local
-   \`\`\`
+   ```
 
-The original lab captured the greeting \`Hello from GitHub Actions Lab\`. A subsequent application change should be checked against the new response expected from that commit.
+The original lab captured the greeting `Hello from GitHub Actions Lab`. A subsequent application change should be checked against the new response expected from that commit.
 
 ## 12. Verification commands
 
@@ -692,71 +692,71 @@ Run these commands from a machine with a working Kubernetes context.
 
 ### 12.1 Cluster nodes
 
-\`\`\`bash
+```bash
 kubectl get nodes -o wide
-\`\`\`
+```
 
 ### 12.2 Deployment details
 
-\`\`\`bash
+```bash
 kubectl get deployment flask-app -n dev
 kubectl describe deployment flask-app -n dev
-\`\`\`
+```
 
 ### 12.3 Deployed image
 
-\`\`\`bash
+```bash
 kubectl get deployment flask-app -n dev \
   -o jsonpath='{.spec.template.spec.containers[0].image}'
 echo
-\`\`\`
+```
 
 ### 12.4 Pod status and placement
 
-\`\`\`bash
+```bash
 kubectl get pods -n dev -o wide
-\`\`\`
+```
 
 ### 12.5 Watch a rollout
 
-\`\`\`bash
+```bash
 kubectl get pods -n dev -w
-\`\`\`
+```
 
 During a successful rolling update, old Pods are replaced by new Pods according to the Deployment rollout strategy and readiness conditions.
 
 ### 12.6 Rollout status and history
 
-\`\`\`bash
+```bash
 kubectl rollout status deployment/flask-app -n dev
 kubectl rollout history deployment/flask-app -n dev
-\`\`\`
+```
 
 The lab recorded multiple Deployment revisions, including revisions 1–3. The change-cause annotation improves the information associated with later revisions.
 
 ### 12.7 Inspect the change-cause annotation
 
-\`\`\`bash
+```bash
 kubectl get deployment flask-app -n dev \
   -o jsonpath='{.metadata.annotations.kubernetes\.io/change-cause}'
 echo
-\`\`\`
+```
 
 ### 12.8 Service and Ingress
 
-\`\`\`bash
+```bash
 kubectl get service -n dev
 kubectl get ingress -n dev
 kubectl describe ingress flask-ingress -n dev
-\`\`\`
+```
 
 ### 12.9 HTTP test
 
-\`\`\`bash
+```bash
 curl -i http://flask.lab.local
-\`\`\`
+```
 
-If the host cannot resolve the name, check the Windows hosts file and confirm the current Ingress address with \`kubectl get ingress -n dev\`.
+If the host cannot resolve the name, check the Windows hosts file and confirm the current Ingress address with `kubectl get ingress -n dev`.
 
 ## 13. Verified results from the practice session
 
@@ -768,7 +768,7 @@ The practice record shows:
 
 - The GitHub Actions Docker Build workflow completed successfully.
 - The Docker build step completed successfully.
-- The image listing showed \`flask-lab:v1\`.
+- The image listing showed `flask-lab:v1`.
 - The displayed image size was approximately 132 MB.
 
 This verified the initial checkout and image-build stage.
@@ -777,29 +777,29 @@ This verified the initial checkout and image-build stage.
 
 The practice record shows successful Docker Hub login, image build, and image push after correcting the registry credential secret.
 
-The initial mutable \`latest\` tag was later replaced by commit-SHA image tags.
+The initial mutable `latest` tag was later replaced by commit-SHA image tags.
 
 ### 13.3 Self-hosted runner and Kubernetes
 
 The captured runner output included:
 
-\`\`\`text
+```text
 Running job: deploy
 Job deploy completed with result: Succeeded
-\`\`\`
+```
 
 The captured Kubernetes Pod output showed two Flask Pods in the Running state:
 
-\`\`\`text
+```text
 flask-app-6c7464679b-bqq5r    Running
 flask-app-6c7464679b-nkwrd    Running
-\`\`\`
+```
 
-The browser test for \`http://flask.lab.local\` returned:
+The browser test for `http://flask.lab.local` returned:
 
-\`\`\`text
+```text
 Hello from GitHub Actions Lab
-\`\`\`
+```
 
 This confirms a working application delivery path through the Service and Ingress.
 
@@ -807,24 +807,24 @@ This confirms a working application delivery path through the Service and Ingres
 
 The practice record captured this commit-specific image:
 
-\`\`\`text
+```text
 mearvi/flask-lab:25d1c956759c4b13b056dc818103266a9fbabd4a
-\`\`\`
+```
 
 The live GitHub repository also records a successful run:
 
 | Field | Recorded value |
 |---|---|
-| Workflow | \`CI-CD Pipeline\` |
-| Workflow file | \`.github/workflows/cicd.yml\` |
-| Run number | \`2\` |
-| Event | \`push\` |
-| Branch | \`main\` |
-| Commit | \`b55df06c700ded1a6f74ac6c656aa38e62a779ee\` |
-| Commit message | \`Update homepage\` |
-| Conclusion | \`success\` |
-| Build job | \`build-push\` — success |
-| Deployment job | \`deploy\` — success |
+| Workflow | `CI-CD Pipeline` |
+| Workflow file | `.github/workflows/cicd.yml` |
+| Run number | `2` |
+| Event | `push` |
+| Branch | `main` |
+| Commit | `b55df06c700ded1a6f74ac6c656aa38e62a779ee` |
+| Commit message | `Update homepage` |
+| Conclusion | `success` |
+| Build job | `build-push` — success |
+| Deployment job | `deploy` — success |
 
 The run's job summary records successful completion of the following steps.
 
@@ -847,7 +847,7 @@ This is direct workflow-run evidence that both jobs and their listed steps compl
 | Item | Evidence status |
 |---|---|
 | Workflow exists in the application repository | Verified from live repository |
-| Trigger is push to \`main\` | Verified in workflow YAML |
+| Trigger is push to `main` | Verified in workflow YAML |
 | Docker Hub login action configured | Verified in workflow YAML |
 | Image built and pushed using commit SHA | Verified in YAML and successful run steps |
 | Deployment waits for build-push | Verified in workflow YAML |
@@ -872,26 +872,26 @@ A Kubernetes Deployment manages ReplicaSets and Pods. When the Pod template chan
 
 The workflow changes the Pod template with:
 
-\`\`\`bash
+```bash
 kubectl set image deployment/flask-app \
   flask-app=<DOCKERHUB_USER>/flask-lab:<FULL_GIT_COMMIT_SHA> \
   -n dev
-\`\`\`
+```
 
 ### 14.2 Observe the new Pods and ReplicaSets
 
-\`\`\`bash
+```bash
 kubectl get pods -n dev -w
 kubectl get rs -n dev
-\`\`\`
+```
 
 The old ReplicaSet may remain with zero desired replicas so that Deployment history and rollback remain possible.
 
 ### 14.3 Inspect rollout history
 
-\`\`\`bash
+```bash
 kubectl rollout history deployment/flask-app -n dev
-\`\`\`
+```
 
 A Deployment revision is created when its Pod template changes. Updating the image reference therefore creates a new revision.
 
@@ -899,23 +899,23 @@ A Deployment revision is created when its Pod template changes. Updating the ima
 
 If a release is unhealthy, a manual rollback can be initiated:
 
-\`\`\`bash
+```bash
 kubectl rollout undo deployment/flask-app -n dev
-\`\`\`
+```
 
 Then verify:
 
-\`\`\`bash
+```bash
 kubectl rollout status deployment/flask-app -n dev
 kubectl rollout history deployment/flask-app -n dev
 kubectl get deployment flask-app -n dev \
   -o jsonpath='{.spec.template.spec.containers[0].image}'
 echo
-\`\`\`
+```
 
 Rollback changes the Deployment Pod template to a previous revision. It does not delete the image from Docker Hub.
 
-The workflow documented here performs deployment and rollout verification. Rollback is a manual recovery operation; the evidence does not show an automated rollback stage inside \`cicd.yml\`.
+The workflow documented here performs deployment and rollout verification. Rollback is a manual recovery operation; the evidence does not show an automated rollback stage inside `cicd.yml`.
 
 ## 15. Troubleshooting guide
 
@@ -937,10 +937,10 @@ Do not paste the token into the workflow or terminal.
 
 Check the Dockerfile, build context, dependency installation, and application files.
 
-\`\`\`bash
+```bash
 docker version
 docker build -t local-flask-test:debug .
-\`\`\`
+```
 
 These are local diagnostic examples, not additional steps claimed to have run in the verified workflow.
 
@@ -954,26 +954,26 @@ Likely cause: no eligible self-hosted runner is online or available.
 
 From the runner installation directory:
 
-\`\`\`bash
+```bash
 sudo ./svc.sh status
-\`\`\`
+```
 
-Check runner registration and labels. The workflow's \`runs-on: self-hosted\` must match an available runner.
+Check runner registration and labels. The workflow's `runs-on: self-hosted` must match an available runner.
 
 ### 15.5 Kubernetes API connection times out
 
 The GitHub-hosted runner is outside the Vagrant host-only network and cannot automatically route to the private cluster address.
 
-The lab resolution was to run deployment on the self-hosted runner on \`k8master1\`.
+The lab resolution was to run deployment on the self-hosted runner on `k8master1`.
 
 On the runner host:
 
-\`\`\`bash
+```bash
 ip -br address
 kubectl config current-context
 kubectl cluster-info
 kubectl get nodes
-\`\`\`
+```
 
 These checks help distinguish network reachability from kubeconfig or API-server issues.
 
@@ -981,28 +981,28 @@ These checks help distinguish network reachability from kubeconfig or API-server
 
 Inspect the Pod and events:
 
-\`\`\`bash
+```bash
 kubectl describe pod <POD_NAME> -n dev
 kubectl get events -n dev --sort-by=.metadata.creationTimestamp
-\`\`\`
+```
 
 Check that the image repository exists, the exact commit tag was pushed, the Deployment uses the same tag, the registry is public or a suitable imagePullSecret exists, and nodes can reach Docker Hub.
 
 ### 15.7 Deployment update succeeds but rollout fails
 
-\`\`\`bash
+```bash
 kubectl rollout status deployment/flask-app -n dev
 kubectl describe deployment flask-app -n dev
 kubectl get pods -n dev -o wide
 kubectl get events -n dev --sort-by=.metadata.creationTimestamp
-\`\`\`
+```
 
 Inspect the failing Pod:
 
-\`\`\`bash
+```bash
 kubectl describe pod <POD_NAME> -n dev
 kubectl logs <POD_NAME> -n dev
-\`\`\`
+```
 
 Possible causes include image pull failures, application startup errors, readiness-probe failures, resource pressure, or incorrect container configuration.
 
@@ -1010,29 +1010,29 @@ Possible causes include image pull failures, application startup errors, readine
 
 Check each layer:
 
-\`\`\`bash
+```bash
 kubectl get pods -n dev
 kubectl get service -n dev
 kubectl get endpoints -n dev
 kubectl get ingress -n dev
 kubectl describe ingress flask-ingress -n dev
-\`\`\`
+```
 
 Then confirm the hostname resolves to the current Ingress address and test:
 
-\`\`\`bash
+```bash
 curl -i http://flask.lab.local
-\`\`\`
+```
 
 ### 15.9 Workflow deploys an old image
 
 Inspect the image reference:
 
-\`\`\`bash
+```bash
 kubectl get deployment flask-app -n dev \
   -o jsonpath='{.spec.template.spec.containers[0].image}'
 echo
-\`\`\`
+```
 
 Compare it with the triggering commit SHA and Docker Hub tag. Confirm that build and deploy use the same commit context.
 
@@ -1040,10 +1040,10 @@ Compare it with the triggering commit SHA and Docker Hub tag. Confirm that build
 
 If independent push-triggered workflows are reintroduced, they can run concurrently. Use one workflow and an explicit dependency:
 
-\`\`\`yaml
+```yaml
 deploy:
   needs: build-push
-\`\`\`
+```
 
 This dependency is present in the final lab workflow.
 
@@ -1053,12 +1053,12 @@ The homelab demonstrates the core delivery flow. A production pipeline needs add
 
 ### 16.1 Minimize GitHub token permissions
 
-The lab workflow does not declare a top-level \`permissions\` block. A hardening improvement is to grant only the permissions required, for example:
+The lab workflow does not declare a top-level `permissions` block. A hardening improvement is to grant only the permissions required, for example:
 
-\`\`\`yaml
+```yaml
 permissions:
   contents: read
-\`\`\`
+```
 
 Review the permissions required by every action before adding them. Do not grant write access by default.
 
@@ -1075,7 +1075,7 @@ For production:
 
 ### 16.3 Pin third-party actions
 
-The lab uses version tags such as \`actions/checkout@v4\` and \`docker/login-action@v3\`. For a hardened supply-chain workflow, consider pinning actions to reviewed full commit SHAs and updating them through a controlled process.
+The lab uses version tags such as `actions/checkout@v4` and `docker/login-action@v3`. For a hardened supply-chain workflow, consider pinning actions to reviewed full commit SHAs and updating them through a controlled process.
 
 ### 16.4 Add testing and scanning
 
@@ -1092,11 +1092,11 @@ These controls were not present in the verified lab workflow. Add and test them 
 
 ### 16.5 Prefer immutable deployment references
 
-The full Git commit SHA tag is more traceable than \`latest\`. For stronger supply-chain guarantees, a production deployment can reference an image digest:
+The full Git commit SHA tag is more traceable than `latest`. For stronger supply-chain guarantees, a production deployment can reference an image digest:
 
-\`\`\`text
+```text
 registry.example.com/team/application@sha256:<IMAGE_DIGEST>
-\`\`\`
+```
 
 A digest identifies image content independently of mutable tags. Digest-based promotion was not demonstrated in this lab.
 
@@ -1112,21 +1112,21 @@ Complete these exercises in the dedicated application repository. Do not experim
 
 ### Exercise 1 — Inspect the workflow
 
-1. Open \`.github/workflows/cicd.yml\`.
+1. Open `.github/workflows/cicd.yml`.
 2. Identify the push trigger.
 3. Identify both jobs and their runners.
-4. Explain why \`deploy\` has \`needs: build-push\`.
+4. Explain why `deploy` has `needs: build-push`.
 5. Identify every GitHub secret reference.
 
-\`\`\`bash
+```bash
 cat .github/workflows/cicd.yml
 git status
-\`\`\`
+```
 
 ### Exercise 2 — Trace a commit to an image
 
 1. Make a harmless application change.
-2. Commit and push to \`main\`.
+2. Commit and push to `main`.
 3. Open the GitHub Actions run.
 4. Identify the commit SHA.
 5. Confirm the Docker image tag uses that SHA.
@@ -1134,34 +1134,34 @@ git status
 
 Expected image naming pattern:
 
-\`\`\`text
+```text
 <DOCKERHUB_USER>/flask-lab:<FULL_GIT_COMMIT_SHA>
-\`\`\`
+```
 
 ### Exercise 3 — Observe the Kubernetes rollout
 
 Before pushing a new change, open a terminal with cluster access:
 
-\`\`\`bash
+```bash
 kubectl get pods -n dev -w
-\`\`\`
+```
 
 Push a new application commit. After the workflow completes:
 
-\`\`\`bash
+```bash
 kubectl rollout status deployment/flask-app -n dev
 kubectl get deployment flask-app -n dev \
   -o jsonpath='{.spec.template.spec.containers[0].image}'
 echo
-\`\`\`
+```
 
 Compare the image tag with the commit that triggered the run.
 
 ### Exercise 4 — Inspect revision history
 
-\`\`\`bash
+```bash
 kubectl rollout history deployment/flask-app -n dev
-\`\`\`
+```
 
 Inspect the change-cause annotation. Explain how the commit SHA helps correlate a Kubernetes rollout with a source revision.
 
@@ -1169,11 +1169,11 @@ Inspect the change-cause annotation. Explain how the commit SHA helps correlate 
 
 Only after recording the current image and revision:
 
-\`\`\`bash
+```bash
 kubectl rollout history deployment/flask-app -n dev
 kubectl rollout undo deployment/flask-app -n dev
 kubectl rollout status deployment/flask-app -n dev
-\`\`\`
+```
 
 Verify the restored image reference and application response.
 
@@ -1190,9 +1190,9 @@ Design a new job that runs unit tests before image publishing. Do not merge it i
 
 The intended dependency is:
 
-\`\`\`text
+```text
 test → build-push → deploy
-\`\`\`
+```
 
 Document the test command and expected failure behavior.
 
@@ -1210,13 +1210,13 @@ GitHub Actions runs event-triggered workflows. A workflow contains jobs, and job
 
 The build job runs on a GitHub-hosted runner, while deployment requires access to a private Kubernetes cluster. The deployment job therefore runs on a self-hosted runner.
 
-### Q4. Why use \`needs: build-push\`?
+### Q4. Why use `needs: build-push`?
 
 It ensures deployment waits until the image has been built and pushed successfully. It prevents a race between publishing and deployment.
 
 ### Q5. Why tag an image with the Git commit SHA?
 
-It creates a traceable mapping between the source commit and container image and avoids relying exclusively on a mutable \`latest\` tag.
+It creates a traceable mapping between the source commit and container image and avoids relying exclusively on a mutable `latest` tag.
 
 ### Q6. What is the purpose of GitHub Secrets?
 
@@ -1230,7 +1230,7 @@ The lab API endpoint is on a private Vagrant host-only network. A hosted runner 
 
 It is a runner installed and managed on infrastructure controlled by the repository owner or organization. It can access permitted internal resources, but must be secured because it executes workflow code.
 
-### Q9. What does \`kubectl set image\` do?
+### Q9. What does `kubectl set image` do?
 
 It changes the container image in a workload's Pod template. For a Deployment, this triggers a new rollout.
 
@@ -1244,7 +1244,7 @@ A restart recreates Pods using the image already specified in the Pod template. 
 
 ### Q12. How can you roll back a failed Deployment?
 
-Use \`kubectl rollout undo deployment/<name> -n <namespace>\`, then verify rollout status, image reference, and application behavior.
+Use `kubectl rollout undo deployment/<name> -n <namespace>`, then verify rollout status, image reference, and application behavior.
 
 ### Q13. Does a successful Docker push prove that the application is deployed?
 
@@ -1262,42 +1262,42 @@ Workflow code can execute on the runner host. Untrusted code may gain access to 
 
 | Task | Command |
 |---|---|
-| Inspect workflow | \`cat .github/workflows/cicd.yml\` |
-| Check Git state | \`git status\` |
-| Commit application change | \`git add . && git commit -m "Update application"\` |
-| Push to main | \`git push origin main\` |
-| Check runner service | \`sudo ./svc.sh status\` |
-| Check cluster nodes | \`kubectl get nodes\` |
-| Check Deployment | \`kubectl get deployment flask-app -n dev\` |
-| Check Pods | \`kubectl get pods -n dev -o wide\` |
-| Watch Pods | \`kubectl get pods -n dev -w\` |
-| Check rollout | \`kubectl rollout status deployment/flask-app -n dev\` |
-| View rollout history | \`kubectl rollout history deployment/flask-app -n dev\` |
-| Roll back | \`kubectl rollout undo deployment/flask-app -n dev\` |
-| Check Service | \`kubectl get svc -n dev\` |
-| Check Ingress | \`kubectl get ingress -n dev\` |
-| Test application | \`curl -i http://flask.lab.local\` |
+| Inspect workflow | `cat .github/workflows/cicd.yml` |
+| Check Git state | `git status` |
+| Commit application change | `git add . && git commit -m "Update application"` |
+| Push to main | `git push origin main` |
+| Check runner service | `sudo ./svc.sh status` |
+| Check cluster nodes | `kubectl get nodes` |
+| Check Deployment | `kubectl get deployment flask-app -n dev` |
+| Check Pods | `kubectl get pods -n dev -o wide` |
+| Watch Pods | `kubectl get pods -n dev -w` |
+| Check rollout | `kubectl rollout status deployment/flask-app -n dev` |
+| View rollout history | `kubectl rollout history deployment/flask-app -n dev` |
+| Roll back | `kubectl rollout undo deployment/flask-app -n dev` |
+| Check Service | `kubectl get svc -n dev` |
+| Check Ingress | `kubectl get ingress -n dev` |
+| Test application | `curl -i http://flask.lab.local` |
 
 ## 20. Chapter summary
 
 The lab progressed from a manual Docker build to an automated application delivery pipeline:
 
-1. A push to \`main\` triggers GitHub Actions.
+1. A push to `main` triggers GitHub Actions.
 2. A GitHub-hosted Ubuntu runner checks out the source.
 3. The workflow authenticates to Docker Hub using GitHub Secrets.
 4. The workflow builds the Flask image and tags it with the full commit SHA.
 5. The workflow pushes the image to Docker Hub.
-6. After \`build-push\` succeeds, the dependent deployment job starts on the self-hosted runner.
-7. The runner verifies cluster access and updates Deployment \`flask-app\` in namespace \`dev\`.
+6. After `build-push` succeeds, the dependent deployment job starts on the self-hosted runner.
+7. The runner verifies cluster access and updates Deployment `flask-app` in namespace `dev`.
 8. The workflow annotates the Deployment with the commit and waits for rollout completion.
 9. The application is verified through its Ingress hostname.
 
-The live workflow run for commit \`b55df06c700ded1a6f74ac6c656aa38e62a779ee\` completed successfully, with both jobs and their recorded steps successful.
+The live workflow run for commit `b55df06c700ded1a6f74ac6c656aa38e62a779ee` completed successfully, with both jobs and their recorded steps successful.
 
 The key lessons are:
 
 - Build and deploy should have an explicit dependency.
-- Use commit-specific image identifiers rather than relying only on \`latest\`.
+- Use commit-specific image identifiers rather than relying only on `latest`.
 - A hosted runner cannot automatically access a private homelab network.
 - A self-hosted runner needs isolation and least-privilege access.
 - Registry credentials belong in GitHub Secrets, not source control.
@@ -1313,7 +1313,7 @@ Chapter 15 introduces **Argo CD GitOps Delivery**. It builds on the Git, contain
 ### Lab repositories
 
 - Application and workflow repository: [mearvi/k8s-github-actions-lab](https://github.com/mearvi/k8s-github-actions-lab)
-- Final workflow: [\`.github/workflows/cicd.yml\`](https://github.com/mearvi/k8s-github-actions-lab/blob/main/.github/workflows/cicd.yml)
+- Final workflow: [`.github/workflows/cicd.yml`](https://github.com/mearvi/k8s-github-actions-lab/blob/main/.github/workflows/cicd.yml)
 - Recorded successful workflow run: [CI-CD Pipeline — run #2](https://github.com/mearvi/k8s-github-actions-lab/actions/runs/27340531791)
 
 ### Official documentation
